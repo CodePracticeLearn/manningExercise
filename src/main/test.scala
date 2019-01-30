@@ -53,7 +53,7 @@ object test extends App {
       case Cons(x, xs)  => x * product(xs)
     }
 
-    /*as argument changes from type A to seq[A]
+    /*as argument changes from type A to seq[A] variable arguments n extractors refer to martin's book for deatailed explanation
 object List {
 def apply[T](elems: T*) = elems.toList
 def unapplySeq[T](x: List[T]): Option[Seq[T]] = Some(x)
