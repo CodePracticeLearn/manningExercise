@@ -35,11 +35,11 @@ object test extends App {
     f(g(a))
   }
 
-  sealed trait List[+A]
+  sealed trait List[+A] // Adding sealed in front means that all implementations of the trait must be declared in this file
 
-  case object Nil extends List[Nothing]
+  case object Nil extends List[Nothing] //cannot take paramters
 
-  case class Cons[+A](head: A, tail: List[A]) extends List[A]
+  case class Cons[+A](head: A, tail: List[A]) extends List[A] //can take params as case class not object
 
   object List {
     def sum(ints: List[Int]): Int = ints match {
@@ -64,5 +64,7 @@ def unapplySeq[T](x: List[T]): Option[Seq[T]] = Some(x)
       if (as.isEmpty) Nil
       else Cons(as.head, apply(as.tail: _*))
   }
+
+
 
 }
