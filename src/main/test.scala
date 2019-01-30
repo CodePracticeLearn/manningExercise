@@ -20,6 +20,18 @@ object test extends App {
     check1(0)
   }
 
-  def curry[A, B, C](f: (A, B) => C): A => (B => C) = {}
+  def curry[A, B, C](f: (A, B) => C): A => (B => C) = {
+    a:A=>((b:B)=>f(a,b))
+  }
+
+  def uncurry[A,B,C](f: A => B => C): (A, B) => C ={ //can be written as A=>(B=>C) as associates towards right
+    (a:A,b:B)=>f(a)(b) //how it works
+  }
+
+  def compose[A,B,C](f: B => C, g: A => B): A => C = {
+    (a:A) =>f(g(a))
+  }
+
+
 
 }
