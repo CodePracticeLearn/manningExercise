@@ -25,13 +25,37 @@ object test extends App {
   }
 
   def uncurry[A,B,C](f: A => B => C): (A, B) => C ={ //can be written as A=>(B=>C) as associates towards right
-    (a:A,b:B)=>f(a)(b) //how it works
+    (a:A,b:B)=>f(a)(b) //how it works -> what is output of function(a) i.e b it is passed to again f(output of function(a) i.e b ) leads to c
+      /*you actually
+        get two traditional function invocations back to back*/
   }
 
   def compose[A,B,C](f: B => C, g: A => B): A => C = {
     (a:A) =>f(g(a))
   }
 
+  sealed trait List[+A]
+
+  case object Nil extends List[Nothing]
+
+  case class Cons[+A](head: A, tail: List[A]) extends List[A]
+
+  object List {
+    def sum(ints: List[Int]): Int = ints match {
+      case Nil => 0
+      case Cons(x,xs) => x + sum(xs)
+    }
+
+    def product(ds: List[Double]): Double = ds match {
+      case Nil => 1.0
+      case Cons(0.0, _) => 0.0
+      case Cons(x,xs) => x * product(xs)
+    }
+
+    def apply[A](as: A*): List[A] =
+      if (as.isEmpty) Nil
+      else Cons(as.head, apply(as.tail: _*))
+  }
 
 
 }
