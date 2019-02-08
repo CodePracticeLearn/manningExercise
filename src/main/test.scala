@@ -71,23 +71,27 @@ def unapplySeq[T](x: List[T]): Option[Seq[T]] = Some(x)
       case Nil        => List()
       case Cons(_, t) => t
     }
-
-    def setHead[A](ls: List[A], n: A): List[A] = {
-      ls match {
-        case Nil        => List()
-        case Cons(x, t) => Cons(x, t)
-      }
-
+  }
+  def setHead[A](ls: List[A], n: A): List[A] = {
+    ls match {
+      case Nil        => List()
+      case Cons(x, t) => Cons(x, t)
     }
 
-    def drop[A](ls: List[A], n: Int): List[A] = {
-      ls match {
+  }
 
-        case Nil        => List()
-        case Cons(x, t) => drop(t, n - 1)
-      }
+  def drop[A](ls: List[A], n: Int): List[A] = {
+    ls match {
 
+      case Nil        => List()
+      case Cons(x, t) => drop(t, n - 1)
     }
+
+  }
+
+  def dropWhile[A](ls: List[A], f: A => Boolean): List[A] = ls match {
+    case Cons(x, t) if f(x) => dropWhile(t, f)
+    case _                  => ls
   }
 
 }
