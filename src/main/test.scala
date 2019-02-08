@@ -65,6 +65,29 @@ def unapplySeq[T](x: List[T]): Option[Seq[T]] = Some(x)
       else Cons(as.head, apply(as.tail: _*))
   }
 
+  def tails[A](ls: List[A]): List[A] = {
 
+    ls match {
+      case Nil        => List()
+      case Cons(_, t) => t
+    }
+
+    def setHead[A](ls: List[A], n: A): List[A] = {
+      ls match {
+        case Nil        => List()
+        case Cons(x, t) => Cons(x, t)
+      }
+
+    }
+
+    def drop[A](ls: List[A], n: Int): List[A] = {
+      ls match {
+
+        case Nil        => List()
+        case Cons(x, t) => drop(t, n - 1)
+      }
+
+    }
+  }
 
 }
