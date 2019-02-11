@@ -113,6 +113,17 @@ def unapplySeq[T](x: List[T]): Option[Seq[T]] = Some(x)
     case Nil => z
     case Cons(head,tail) => foldLeft(tail, f(z,head))(f)
   }
+// easy implementation
+
+
+  /*def foldLeft1[A, B](as: List[A], z: B)(f: (B, A) => B): B = {
+    @annotation.tailrec
+    def iter(as: List[A], acc: B): B = as match {
+      case Nil => acc
+      case h :: t => iter(t, f(acc, h))
+    }
+    iter(as, z)
+  }*/
 
   /*
   * foldLeft((1,Cons(2,Cons(3,Nil)),0)(_+_)
@@ -130,8 +141,80 @@ def unapplySeq[T](x: List[T]): Option[Seq[T]] = Some(x)
     foldRight(l, (b:B) => b)((a,g) => b => g(f(b,a)))(z)
   // foldright is not tail recursive, so foldRightViaFoldLeft_1 is used to avoid stack overflow
 
+  def append[A](xs: List[A], ys: List[A]): List[A] = foldRight(xs,ys)(Cons(_ , _))
+
+
+ // def flatten[A](xs: List[List[A]]): List[A] = foldRight(Nil:List[A],xs)(append)
+
+  def concat[A](l: List[List[A]]): List[A] =
+    foldRight(l, Nil:List[A])(append)
+
+  def add1(l: List[Int]): List[Int] =
+    foldRight(l, Nil:List[Int])((h,t) => Cons(h+1,t))
+
+  def doubleToString(l: List[Double]): List[String] =
+    foldRight(l, Nil:List[String])((h,t) => Cons(h.toString,t))
+
+  def map[A,B](l: List[A])(f: A => B): List[B] =
+    foldRight(l, Nil:List[B])((h,t) => Cons(f(h),t))
+
+
+  def flatMap[A,B](l: List[A])(f: A => List[B]): List[B] =
+    concat(map(l)(f))
+
+  def filterViaFlatMap[A](l: List[A])(f: A => Boolean): List[A] =
+    flatMap(l)(a => if (f(a)) List(a) else Nil)
+
+
+  def addPairwise(a: List[Int], b: List[Int]): List[Int] = (a,b) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(h1,t1), Cons(h2,t2)) => Cons(h1+h2, addPairwise(t1,t2))
+  }
+
+  def zipWith[A,B,C](a: List[A], b: List[B])(f: (A,B) => C): List[C] = (a,b) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(h1,t1), Cons(h2,t2)) => Cons(f(h1,h2), zipWith(t1,t2)(f))
+  }
 
 
 
+  sealed trait Tree[+A]
+  case class Leaf[A](value: A) extends Tree[A]
+  case class Branch[A](left: Tree[A], right: Tree[A]) extends Tree[A]
 
+  object Tree{
+
+
+    def size[A](t:Tree[A]):Int ={
+      case Leaf(_) => 1
+      case Branch(l,r) => 1 + size(l) + size(r)
+    }
+
+    def maximum(t: Tree[Int]): Int = t match {
+      case Leaf(n) => n
+      case Branch(l,r) => maximum(l) max maximum(r)
+    }
+
+    def depth[A](t: Tree[A]): Int = t match {
+      case Leaf(_) => 0
+      case Branch(l,r) => 1 + (depth(l) max depth(r))
+    }
+
+    def map[A,B](t: Tree[A])(f: A => B): Tree[B] = t match {
+      case Leaf(a) => Leaf(f(a))
+      case Branch(l,r) => Branch(map(l)(f), map(r)(f))
+    }
+
+    def foldT[A, B](tree: Tree[A])(f: A => B)(g: (B, B) => B): B = tree match {
+      case Leaf(a) => f(a)
+      case Branch(left, right) => g(foldT(left)(f)(g), foldT(right)(f)(g))
+    }
+
+    def fSize(tree: Tree[_]): Int = foldT(tree)(_ => 1)((left, right) => left + right + 1)
+    def fMax(tree: Tree[Int]): Int = foldT(tree)(identity)(_ max _)
+    def fDepth(tree: Tree[_]): Int = foldT(tree)(_ => 1)((x, y) => (x max y) + 1)
+    def fMap[A, B](tree: Tree[A])(f: A => B): Tree[B] = foldT(tree)(x => Leaf(f(x)): Tree[B])((x, y) => Branch(x, y))
+  }
 }
