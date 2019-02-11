@@ -1,6 +1,6 @@
 import scala.annotation.tailrec
 
-object test extends App {
+object test{
 
   def fib(n: Int): Int = {
     @annotation.tailrec
@@ -8,14 +8,12 @@ object test extends App {
     go(0, 1, n)
   }
 
-  println("fibonnaci" + fib(2))
-
   def check[A](as: Array[A], ordered: (A, A) => Boolean): Boolean = {
 
     def check1[A](n: Int) = {
       if (as.isEmpty) true
       else if (ordered(as(n), as(n + 1))) false
-      else ordered(n + 1)
+      else true
     }
     check1(0)
   }
@@ -93,5 +91,47 @@ def unapplySeq[T](x: List[T]): Option[Seq[T]] = Some(x)
     case Cons(x, t) if f(x) => dropWhile(t, f)
     case _                  => ls
   }
+
+  def init[A](l: List[A]): List[A] = l match {
+    case Nil => List()// any be error or exception too
+    case Cons(_, Nil) => Nil
+    case Cons(h, t) => Cons(h, init(t))
+  }
+
+  def foldRight[A,B](ls: List[A], z: B)(f: (A, B) => B): B = // Utility functions
+    ls match {
+      case Nil => z
+      case Cons(head, xs) => f(head, foldRight(xs, z)(f))
+    }
+
+  def length[A](ls: List[A]): Int =
+    foldRight(ls, 0)((_,acc) => acc + 1)
+
+
+  @annotation.tailrec
+  def foldLeft[A,B](ls: List[A], z: B)(f: (B, A) => B): B = ls match {
+    case Nil => z
+    case Cons(head,tail) => foldLeft(tail, f(z,head))(f)
+  }
+
+  /*
+  * foldLeft((1,Cons(2,Cons(3,Nil)),0)(_+_)
+  * foldleft(cons(2,cons(3,Nil)),1)
+  */
+
+// do read this answer chain for better understanding: https://stackoverflow.com/questions/17136794/foldleft-using-foldright-in-scala
+  def foldRightViaFoldLeft[A,B](l: List[A], z: B)(f: (A,B) => B): B =
+    //foldLeft(reverse(l), z)((b,a) => f(a,b))
+
+  def foldRightViaFoldLeft_1[A,B](l: List[A], z: B)(f: (A,B) => B): B =
+    foldLeft(l, (b:B) => b)((g,a) => b => g(f(a,b)))(z)
+
+  def foldLeftViaFoldRight[A,B](l: List[A], z: B)(f: (B,A) => B): B =
+    foldRight(l, (b:B) => b)((a,g) => b => g(f(b,a)))(z)
+  // foldright is not tail recursive, so foldRightViaFoldLeft_1 is used to avoid stack overflow
+
+
+
+
 
 }
