@@ -2,6 +2,10 @@
 
 object MonoidImpl {
 
+  /* Just what is a monoid? It’s simply a type A and an implementation of Monoid[A] that satisfies the laws.
+  Stated tersely, a monoid is a type together with a binary operation (op) over that type, satisfying associativity
+  and having an identity element (zero).*/
+
   trait Monoid[A] {
     def operation(a1: A, a2: A): A
 
@@ -34,6 +38,8 @@ object MonoidImpl {
   }
 
   def optionMonoid[A]: Monoid[Option[A]] = {
-     def operation(a:Option[A],b:Option[A]):Option[A] = a orElse b }
-     def zero: Option[A] = None
+     def operation(a:Option[A],b:Option[A]):Option[A] = a orElse b
+     def zero: Option[A] = None  }
+
+
 }
