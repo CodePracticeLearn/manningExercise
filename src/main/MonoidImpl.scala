@@ -41,5 +41,18 @@ object MonoidImpl {
      def operation(a:Option[A],b:Option[A]):Option[A] = a orElse b
      def zero: Option[A] = None  }
 
+  def endoMonoid[A] = new Monoid[A => A] {
+    def op(a1: (A) => A, a2: (A) => A): (A) => A = a1 compose a2
+    def zero: (A) => A = identity[A]
+  }
+
+  def mapMergeMonoid[K,V](V: Monoid[V]): Monoid[Map[K, V]] = new Monoid[Map[K, V]] {
+    def zero = Map[K,V]()
+    def op(a: Map[K, V], b: Map[K, V]) =
+      (a.keySet ++ b.keySet).foldLeft(zero) { (acc,k) =>
+        acc.updated(k, V.op(a.getOrElse(k, V.zero),
+          b.getOrElse(k, V.zero)))
+      } }
+
 
 }
