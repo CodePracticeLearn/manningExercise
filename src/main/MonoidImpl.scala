@@ -2,6 +2,12 @@
 
 object MonoidImpl {
 
+  trait Monoid[A] {
+    def op(a1: A, a2: A): A
+
+    def zero: A
+  }
+
   //Give Monoid instances for integer addition and multiplication as well as the Boolean operators.
   val intAddition: Monoid[Int] = {
     def add(x: Int, y: Int): Int = x + y
@@ -26,4 +32,6 @@ object MonoidImpl {
 
     def fun: Boolean = true
   }
+
+
 }
