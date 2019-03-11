@@ -1,6 +1,6 @@
 import scala.annotation.tailrec
 
-object test{
+object Implementation{
 
   def fib(n: Int): Int = {
     @annotation.tailrec
